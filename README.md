@@ -4,15 +4,14 @@ End-to-end AI platform for automated helmet-violation detection from traffic vid
 
 ## Quick start (V1 local demo)
 
-**Python:** Use **3.11 or 3.12** (`python3`). On macOS, `python` is often missing; PaddlePaddle does not support 3.14 yet. Mock mode works on 3.14 with `requirements.txt` only.
+**Python:** Use **3.12** (`python3.12`). On macOS, `python` is often missing; PaddlePaddle does not support 3.14. Install with: `brew install python@3.12`
 
 ### Backend
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt          # mock mode (no YOLO/OCR)
-# pip install -r requirements-ml.txt     # real inference — Python 3.11/3.12 only
+python3.12 -m venv .venv312
+source .venv312/bin/activate
+pip install -r requirements-ml.txt
 cp .env.example .env
 uvicorn api.main:app --reload --port 8000
 ```
@@ -26,7 +25,13 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — upload a video, watch processing status, review violations.
+Open http://localhost:5173 — upload a video or image, watch processing status, click **Review** to play back with red violation overlays, and inspect rider + plate evidence.
+
+If upgrading an existing SQLite database, run:
+
+```bash
+python scripts/migrate_add_overlay_columns.py
+```
 
 ### Smoke test
 
@@ -51,7 +56,7 @@ See [`.env.example`](.env.example) for all keys. Critical ones:
 | `STORAGE_BACKEND` | `local` | `local` or `s3` (V2) |
 | `USE_MOCK_MODELS` | `true` | Skip YOLO/OCR when no weights |
 | `USE_CELERY` | `false` | Use Celery worker (V2) |
-| `DELETE_RAW_VIDEO_AFTER_PROCESS` | `false` | Set `true` during Phase 4 testing |
+| `DELETE_RAW_VIDEO_AFTER_PROCESS` | `false` | Keep `false` for video review playback; set `true` only if disk space is critical |
 
 ## API endpoints
 
@@ -59,9 +64,11 @@ See [`.env.example`](.env.example) for all keys. Critical ones:
 |--------|------|-------------|
 | POST | `/api/videos/upload` | Upload video, start processing |
 | GET | `/api/videos` | List all videos |
+| GET | `/api/videos/{id}/stream` | Stream original upload (video review) |
 | GET | `/api/videos/{id}/status` | Video processing status |
 | GET | `/api/violations` | List violations (filterable) |
-| GET | `/api/violations/{id}/image` | Evidence image |
+| GET | `/api/violations/{id}/image` | Rider evidence image |
+| GET | `/api/violations/{id}/plate-image` | Plate crop image |
 | PATCH | `/api/violations/{id}` | Update plate / reviewed flag |
 | DELETE | `/api/violations/{id}` | Remove false positive |
 | GET | `/api/health` | System status |

@@ -1,5 +1,6 @@
 """Standalone video processing job — no FastAPI imports."""
 
+import json
 from datetime import datetime, timezone
 
 from api.config import settings
@@ -23,14 +24,27 @@ def process_video_job(video_id: str, storage_key: str) -> None:
         db.commit()
 
         local_path = storage.materialize_for_processing(storage_key)
-        violation_results = run_inference_pipeline(local_path, video_id=video_id)
+        pipeline_result = run_inference_pipeline(local_path, video_id=video_id)
 
-        for v in violation_results:
+        media = pipeline_result.media
+        if media.width:
+            video.width = media.width
+        if media.height:
+            video.height = media.height
+        if media.duration_seconds:
+            video.duration_seconds = media.duration_seconds
+
+        for v in pipeline_result.violations:
             if is_duplicate_plate(db, v.plate_number, v.frame_timestamp, video.upload_time):
                 continue
 
             evidence_key = f"{video_id}_{v.track_id}.jpg"
-            saved_key = storage.save_evidence(evidence_key, v.evidence_image_bytes)
+            saved_evidence = storage.save_evidence(evidence_key, v.evidence_image_bytes)
+
+            plate_path = None
+            if v.plate_image_bytes:
+                plate_key = f"{video_id}_{v.track_id}_plate.jpg"
+                plate_path = storage.save_evidence(plate_key, v.plate_image_bytes)
 
             db.add(
                 Violation(
@@ -40,7 +54,9 @@ def process_video_job(video_id: str, storage_key: str) -> None:
                     plate_confidence=v.plate_confidence,
                     helmet_confidence=v.helmet_confidence,
                     frame_timestamp=v.frame_timestamp,
-                    evidence_image_path=saved_key,
+                    evidence_image_path=saved_evidence,
+                    plate_image_path=plate_path,
+                    overlay_frames=json.dumps(v.overlay_frames),
                 )
             )
 

@@ -34,8 +34,9 @@ def get_plate_model():
 
 def detect_plate_crop(image_bgr) -> tuple[object | None, float]:
     """Run plate detector on a BGR crop; return (crop_array, confidence) or (None, 0)."""
-    import cv2
-    import numpy as np
+    plate_path = Path(settings.PLATE_MODEL_PATH)
+    if not plate_path.exists():
+        return None, 0.0
 
     model = get_plate_model()
     results = model(image_bgr, verbose=False)

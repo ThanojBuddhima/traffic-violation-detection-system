@@ -60,6 +60,23 @@ def get_violation_image(violation_id: int, db: Session = Depends(get_db)):
     return Response(content=data, media_type="image/jpeg")
 
 
+@router.get("/{violation_id}/plate-image")
+def get_violation_plate_image(violation_id: int, db: Session = Depends(get_db)):
+    violation = db.query(Violation).filter(Violation.id == violation_id).first()
+    if not violation:
+        raise HTTPException(status_code=404, detail="Violation not found")
+    if not violation.plate_image_path:
+        raise HTTPException(status_code=404, detail="Plate image not found")
+
+    storage = get_storage()
+    try:
+        data = storage.read(violation.plate_image_path)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Plate image not found") from None
+
+    return Response(content=data, media_type="image/jpeg")
+
+
 @router.patch("/{violation_id}", response_model=ViolationResponse)
 def update_violation(
     violation_id: int,
@@ -91,6 +108,11 @@ def delete_violation(violation_id: int, db: Session = Depends(get_db)):
         storage.delete(violation.evidence_image_path)
     except FileNotFoundError:
         pass
+    if violation.plate_image_path:
+        try:
+            storage.delete(violation.plate_image_path)
+        except FileNotFoundError:
+            pass
 
     db.delete(violation)
     db.commit()

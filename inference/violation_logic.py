@@ -24,6 +24,31 @@ def extract_crop(frame_bgr, box) -> bytes:
     return buf.tobytes()
 
 
+def box_xyxy(box) -> tuple[int, int, int, int]:
+    x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+    return x1, y1, x2, y2
+
+
+def encode_bgr_jpeg(crop_bgr) -> bytes | None:
+    """Encode a BGR numpy array as JPEG bytes."""
+    import cv2
+
+    if crop_bgr is None or crop_bgr.size == 0:
+        return None
+    ok, buf = cv2.imencode(".jpg", crop_bgr)
+    if not ok:
+        return None
+    return buf.tobytes()
+
+
+def overlay_entry(timestamp: float, box, frame_bgr) -> dict:
+    x1, y1, x2, y2 = box_xyxy(box)
+    h, w = frame_bgr.shape[:2]
+    x1, y1 = max(0, x1), max(0, y1)
+    x2, y2 = min(w, x2), min(h, y2)
+    return {"t": timestamp, "x1": x1, "y1": y1, "x2": x2, "y2": y2}
+
+
 def accumulate_track_stats(results_iter, fps: float) -> dict[int, dict]:
     """Process tracking results and build per-track statistics."""
     import cv2
@@ -51,11 +76,13 @@ def accumulate_track_stats(results_iter, fps: float) -> dict[int, dict]:
                     "best_crop": b"",
                     "best_conf": 0.0,
                     "frame_timestamp": timestamp,
+                    "overlay_frames": [],
                 },
             )
             state["total_frames"] += 1
             if cls == 1:  # no_helmet
                 state["no_helmet_frames"] += 1
+                state["overlay_frames"].append(overlay_entry(timestamp, box, frame_bgr))
             if conf > state["best_conf"]:
                 state["best_crop"] = extract_crop(frame_bgr, box)
                 state["best_conf"] = conf

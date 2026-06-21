@@ -34,11 +34,23 @@ def main():
 
         violations = client.get("/api/violations", params={"video_id": video_id}).json()
         assert len(violations) >= 1, "Expected at least one violation"
-        print(f"Violations: {len(violations)}")
+        v0 = violations[0]
+        assert isinstance(v0.get("overlay_frames"), list), "overlay_frames should be a list"
+        assert len(v0["overlay_frames"]) >= 1, "Expected overlay frame data"
+        print(f"Violations: {len(violations)}, overlay frames: {len(v0['overlay_frames'])}")
 
-        img = client.get(f"/api/violations/{violations[0]['id']}/image")
+        img = client.get(f"/api/violations/{v0['id']}/image")
         assert img.status_code == 200 and img.headers["content-type"] == "image/jpeg"
         print("Evidence image OK")
+
+        if v0.get("plate_image_path"):
+            plate_img = client.get(f"/api/violations/{v0['id']}/plate-image")
+            assert plate_img.status_code == 200 and plate_img.headers["content-type"] == "image/jpeg"
+            print("Plate image OK")
+
+        stream = client.get(f"/api/videos/{video_id}/stream")
+        assert stream.status_code == 200, f"Stream failed: {stream.status_code}"
+        print("Video stream OK")
 
     print("All smoke tests passed")
 
