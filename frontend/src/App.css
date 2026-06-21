@@ -257,3 +257,106 @@ section h2 {
   border: 1px solid #ddd;
   border-radius: 6px;
 }
+
+.modal-wide {
+  max-width: 1100px;
+}
+
+.video-review-container {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 800px) {
+  .video-review-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.video-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.review-media {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.review-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.review-sidebar h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.review-violation-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.review-violation-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fafafa;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.8rem;
+  gap: 0.15rem;
+}
+
+.review-violation-item:hover,
+.review-violation-item.active {
+  border-color: #ff0000;
+  background: #fff5f5;
+}
+
+.review-violation-item strong {
+  font-size: 0.9rem;
+}
+
+.evidence-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.evidence-dual figure {
+  margin: 0;
+}
+
+.evidence-dual figcaption {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.35rem;
+}
+
+@media (max-width: 600px) {
+  .evidence-dual {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Violation } from "../api/client";
-import { updateViolation, violationImageUrl } from "../api/client";
+import { updateViolation, violationImageUrl, violationPlateImageUrl } from "../api/client";
 
 interface Props {
   violation: Violation;
@@ -11,6 +11,7 @@ interface Props {
 export function EvidenceModal({ violation, onClose, onChange }: Props) {
   const [plate, setPlate] = useState(violation.plate_number);
   const [saving, setSaving] = useState(false);
+  const [plateImageError, setPlateImageError] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -30,11 +31,27 @@ export function EvidenceModal({ violation, onClose, onChange }: Props) {
           ×
         </button>
         <h2>Violation #{violation.id}</h2>
-        <img
-          src={violationImageUrl(violation.id)}
-          alt="Evidence"
-          className="evidence-full"
-        />
+        <div className="evidence-dual">
+          <figure>
+            <figcaption>Rider evidence</figcaption>
+            <img
+              src={violationImageUrl(violation.id)}
+              alt="Rider evidence"
+              className="evidence-full"
+            />
+          </figure>
+          {violation.plate_image_path && !plateImageError && (
+            <figure>
+              <figcaption>Plate crop</figcaption>
+              <img
+                src={violationPlateImageUrl(violation.id)}
+                alt="Plate crop"
+                className="evidence-full"
+                onError={() => setPlateImageError(true)}
+              />
+            </figure>
+          )}
+        </div>
         <div className="modal-meta">
           <p>
             <strong>Track ID:</strong> {violation.track_id}

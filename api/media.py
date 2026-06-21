@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv", ".webm"}
-IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".m4v", ".mpeg", ".mpg", ".3gp"}
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".heic", ".heif", ".jfif", ".tif", ".tiff"}
 ALLOWED_EXTENSIONS = VIDEO_EXTENSIONS | IMAGE_EXTENSIONS
 
 

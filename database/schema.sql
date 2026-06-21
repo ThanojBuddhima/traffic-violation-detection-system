@@ -7,6 +7,8 @@ CREATE TABLE videos (
     upload_time TIMESTAMP WITH TIME ZONE,
     status VARCHAR(32) NOT NULL,
     duration_seconds FLOAT,
+    width INTEGER,
+    height INTEGER,
     processed_at TIMESTAMP WITH TIME ZONE,
     error_message TEXT
 );
@@ -20,6 +22,8 @@ CREATE TABLE violations (
     helmet_confidence FLOAT DEFAULT 0.0,
     frame_timestamp FLOAT DEFAULT 0.0,
     evidence_image_path VARCHAR(1024) NOT NULL,
+    plate_image_path VARCHAR(1024),
+    overlay_frames TEXT DEFAULT '[]',
     created_at TIMESTAMP WITH TIME ZONE,
     reviewed BOOLEAN DEFAULT FALSE
 );

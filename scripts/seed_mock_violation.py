@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Seed a mock violation for local development."""
 
+import json
 import uuid
 from datetime import datetime, timezone
 
 from api.storage import get_storage
 from database.models import Video, VideoStatus, Violation
 from database.session import SessionLocal, init_db
-from inference.pipeline import _mock_violations
+from inference.pipeline import run_inference_pipeline
 
 
 def main():
@@ -22,11 +23,18 @@ def main():
         storage_key=f"uploads/{video_id}.mp4",
         status=VideoStatus.DONE.value,
         processed_at=datetime.now(timezone.utc),
+        width=320,
+        height=180,
+        duration_seconds=5.0,
     )
     db.add(video)
 
-    for v in _mock_violations("seed", video_id):
+    result = run_inference_pipeline("seed", video_id=video_id)
+    for v in result.violations:
         key = storage.save_evidence(f"{video_id}_{v.track_id}.jpg", v.evidence_image_bytes)
+        plate_path = None
+        if v.plate_image_bytes:
+            plate_path = storage.save_evidence(f"{video_id}_{v.track_id}_plate.jpg", v.plate_image_bytes)
         db.add(
             Violation(
                 video_id=video_id,
@@ -36,6 +44,8 @@ def main():
                 helmet_confidence=v.helmet_confidence,
                 frame_timestamp=v.frame_timestamp,
                 evidence_image_path=key,
+                plate_image_path=plate_path,
+                overlay_frames=json.dumps(v.overlay_frames),
             )
         )
 

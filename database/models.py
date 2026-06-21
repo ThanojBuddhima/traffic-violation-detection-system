@@ -31,6 +31,8 @@ class Video(Base):
     upload_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     status: Mapped[str] = mapped_column(String(32), default=VideoStatus.QUEUED.value)
     duration_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    width: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    height: Mapped[int | None] = mapped_column(Integer, nullable=True)
     processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
 
@@ -48,6 +50,8 @@ class Violation(Base):
     helmet_confidence: Mapped[float] = mapped_column(Float, default=0.0)
     frame_timestamp: Mapped[float] = mapped_column(Float, default=0.0)
     evidence_image_path: Mapped[str] = mapped_column(String(1024))
+    plate_image_path: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    overlay_frames: Mapped[str] = mapped_column(Text, default="[]")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     reviewed: Mapped[bool] = mapped_column(Boolean, default=False)
 
