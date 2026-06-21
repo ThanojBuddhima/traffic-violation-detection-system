@@ -1,0 +1,17 @@
+# Optional local parity testing for V2 stack without full deployment.
+# Usage: docker compose -f docker-compose.dev.yml up postgres redis
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: violations
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: changeme
+    ports:
+      - "5432:5432"

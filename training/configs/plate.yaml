@@ -1,0 +1,9 @@
+# Sri Lankan plate detection dataset — YOLO format
+# Classes: 0 plate
+
+path: ../datasets/plate
+train: images/train
+val: images/val
+
+names:
+  0: plate

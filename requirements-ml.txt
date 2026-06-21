@@ -1,0 +1,6 @@
+# ML dependencies — requires Python 3.11 or 3.12 (PaddlePaddle does not support 3.14 yet)
+-r requirements.txt
+opencv-python-headless>=4.9
+ultralytics>=8.3
+paddleocr>=2.7
+paddlepaddle>=2.6

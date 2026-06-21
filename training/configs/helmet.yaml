@@ -1,0 +1,11 @@
+# Helmet detection dataset — YOLO format
+# Classes: 0 helmet, 1 no_helmet, 2 motorcycle
+
+path: ../datasets/helmet
+train: images/train
+val: images/val
+
+names:
+  0: helmet
+  1: no_helmet
+  2: motorcycle
