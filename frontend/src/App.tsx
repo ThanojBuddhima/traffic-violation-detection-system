@@ -45,7 +45,7 @@ function App() {
     <div className="app">
       <header>
         <h1>Helmet Violation Detection</h1>
-        <p className="subtitle">Sri Lankan traffic video analysis</p>
+        <p className="subtitle">Sri Lankan traffic video and image analysis</p>
         {health.data && (
           <div className="health-banner">
             {health.data.use_mock_models && (

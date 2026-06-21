@@ -19,7 +19,7 @@ const statusClass = (status: string) => {
 
 export function ProcessingTable({ videos }: Props) {
   if (videos.length === 0) {
-    return <p className="empty">No videos uploaded yet.</p>;
+    return <p className="empty">No uploads yet.</p>;
   }
 
   return (

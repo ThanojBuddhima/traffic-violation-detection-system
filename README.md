@@ -4,15 +4,14 @@ End-to-end AI platform for automated helmet-violation detection from traffic vid
 
 ## Quick start (V1 local demo)
 
-**Python:** Use **3.11 or 3.12** (`python3`). On macOS, `python` is often missing; PaddlePaddle does not support 3.14 yet. Mock mode works on 3.14 with `requirements.txt` only.
+**Python:** Use **3.12** (`python3.12`). On macOS, `python` is often missing; PaddlePaddle does not support 3.14. Install with: `brew install python@3.12`
 
 ### Backend
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt          # mock mode (no YOLO/OCR)
-# pip install -r requirements-ml.txt     # real inference — Python 3.11/3.12 only
+python3.12 -m venv .venv312
+source .venv312/bin/activate
+pip install -r requirements-ml.txt
 cp .env.example .env
 uvicorn api.main:app --reload --port 8000
 ```

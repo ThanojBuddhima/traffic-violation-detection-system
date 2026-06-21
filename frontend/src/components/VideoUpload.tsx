@@ -1,6 +1,12 @@
 import { useCallback, useState } from "react";
 import { uploadVideo } from "../api/client";
 
+const ALLOWED_EXT = /\.(mp4|avi|mov|mkv|webm|jpe?g|png|webp|bmp)$/i;
+
+function isAllowedFile(file: File): boolean {
+  return file.type.startsWith("video/") || file.type.startsWith("image/") || ALLOWED_EXT.test(file.name);
+}
+
 interface Props {
   onUploaded: () => void;
 }
@@ -12,8 +18,8 @@ export function VideoUpload({ onUploaded }: Props) {
 
   const handleFile = useCallback(
     async (file: File) => {
-      if (!file.type.startsWith("video/") && !file.name.match(/\.(mp4|avi|mov|mkv)$/i)) {
-        setError("Please upload a video file (.mp4, .avi, .mov, .mkv)");
+      if (!isAllowedFile(file)) {
+        setError("Please upload a video (.mp4, .avi, .mov, .mkv) or image (.jpg, .png, .webp, .bmp)");
         return;
       }
       setError(null);
@@ -47,12 +53,12 @@ export function VideoUpload({ onUploaded }: Props) {
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
     >
-      <p>{uploading ? "Uploading…" : "Drag & drop a traffic video here"}</p>
+      <p>{uploading ? "Uploading…" : "Drag & drop a traffic video or image here"}</p>
       <label className="upload-btn">
         {uploading ? "Processing upload…" : "Browse files"}
         <input
           type="file"
-          accept="video/*,.mp4,.avi,.mov,.mkv"
+          accept="video/*,image/*,.mp4,.avi,.mov,.mkv,.jpg,.jpeg,.png,.webp,.bmp"
           hidden
           disabled={uploading}
           onChange={(e) => {

@@ -6,6 +6,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFi
 from sqlalchemy.orm import Session
 
 from api.deps import get_db
+from api.media import is_allowed_upload
 from api.schemas import VideoResponse, VideoUploadResponse
 from api.services.job_dispatcher import dispatch_video_job
 from api.storage import get_storage
@@ -20,8 +21,11 @@ async def upload_video(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    if not file.filename or not file.filename.lower().endswith((".mp4", ".avi", ".mov", ".mkv")):
-        raise HTTPException(status_code=400, detail="Only video files (.mp4, .avi, .mov, .mkv) are supported")
+    if not is_allowed_upload(file.filename, file.content_type):
+        raise HTTPException(
+            status_code=400,
+            detail="Supported files: videos (.mp4, .avi, .mov, .mkv) and images (.jpg, .jpeg, .png, .webp, .bmp)",
+        )
 
     video_id = str(uuid.uuid4())
     storage = get_storage()
